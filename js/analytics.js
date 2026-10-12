@@ -11,7 +11,7 @@
 // Nunca se envían nombres, correos ni respuestas.
 
 window.ANALYTICS_CONFIG = {
-  goatcounter: ""   // tu código de GoatCounter, p. ej. "parla"
+  goatcounter: "parla"   // panel: https://parla.goatcounter.com
 };
 
 (function () {
