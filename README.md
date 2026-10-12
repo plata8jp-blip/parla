@@ -10,6 +10,7 @@ Microapp gratuita para aprender idiomas jugando: inglés, francés, italiano y a
 - **Progreso:** XP, niveles, racha diaria y sellos para comprar protectores de racha.
 - **Cuentas:** crear cuenta, iniciar sesión, cerrar sesión y modo invitado.
 - **Medición de uso:** con GoatCounter, anónima y sin cookies (ver abajo).
+- **Dirección pública:** https://plata8jp-blip.github.io/parla/
 
 ## Probarla en tu ordenador
 
