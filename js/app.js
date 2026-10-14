@@ -29,26 +29,61 @@
   };
 
   // ---------- voz ----------
-  // Se priorizan las voces instaladas en el dispositivo (localService), que no envían el texto a internet.
+  // Solo se fuerza una voz si es una de las conocidas y fiables para ese idioma (primero las
+  // instaladas en el dispositivo). Si no, se deja que el navegador elija su voz por defecto:
+  // en Mac la lista incluye voces de Siri sin descargar y voces de efectos que no suenan.
+  const PREFERRED_VOICES = {
+    "en-US": ["Samantha", "Alex", "Daniel", "Karen", "Moira", "Microsoft Aria", "Microsoft Jenny", "Microsoft Zira", "Microsoft David", "Google US English", "Google UK English Female"],
+    "fr-FR": ["Thomas", "Amélie", "Audrey", "Marie", "Microsoft Denise", "Microsoft Hortense", "Microsoft Paul", "Google français"],
+    "it-IT": ["Alice", "Federica", "Luca", "Paola", "Microsoft Elsa", "Microsoft Isabella", "Microsoft Cosimo", "Google italiano"],
+    "de-DE": ["Anna", "Helena", "Markus", "Petra", "Yannick", "Microsoft Katja", "Microsoft Hedda", "Microsoft Conrad", "Microsoft Stefan", "Google Deutsch"]
+  };
   const Voice = {
     voices: [],
     ok: "speechSynthesis" in window,
+    current: null,          // referencia viva: algunos navegadores cortan el audio si se pierde
+    warned: false,
     init() {
       if (!this.ok) return;
       const load = () => (this.voices = speechSynthesis.getVoices());
-      load(); speechSynthesis.onvoiceschanged = load;
+      load();
+      speechSynthesis.addEventListener?.("voiceschanged", load);
+    },
+    pick(lang) {
+      const names = PREFERRED_VOICES[lang] || [];
+      const sameLang = this.voices.filter((v) => v.lang.replace("_", "-") === lang);
+      for (const local of [true, false]) {
+        for (const n of names) {
+          const v = sameLang.find((v) => v.localService === local && (v.name === n || v.name.startsWith(n + " ")));
+          if (v) return v;
+        }
+      }
+      return null;
     },
     speak(text, lang, slow) {
-      if (!this.ok) return toast("Tu navegador no puede reproducir audio de voz.");
-      speechSynthesis.cancel();
+      if (!this.ok) return toast("Tu navegador no puede reproducir la pronunciación. Prueba con Chrome, Safari o Edge.");
+      const synth = window.speechSynthesis;
       const u = new SpeechSynthesisUtterance(text);
       u.lang = lang;
-      const local = this.voices.filter((v) => v.localService);
-      const v = local.find((v) => v.lang === lang) || local.find((v) => v.lang.startsWith(lang.slice(0, 2)))
-        || this.voices.find((v) => v.lang === lang) || this.voices.find((v) => v.lang.startsWith(lang.slice(0, 2)));
+      const v = this.pick(lang);
       if (v) u.voice = v;
       u.rate = slow ? 0.55 : 0.92;
-      speechSynthesis.speak(u);
+      u.volume = 1;
+      this.current = u;
+      // Si a los 3 s no ha empezado a sonar, el motor de voz está bloqueado: se reinicia y se avisa.
+      let started = false;
+      u.onstart = () => { started = true; };
+      u.onerror = (e) => { if (e.error !== "interrupted" && e.error !== "canceled") this.fail(); };
+      setTimeout(() => { if (!started && this.current === u) { synth.cancel(); this.fail(); } }, 3000);
+      const go = () => { synth.resume(); synth.speak(u); };
+      // Cancelar y hablar en el mismo instante hace que Chrome a veces descarte el audio.
+      if (synth.speaking || synth.pending) { synth.cancel(); setTimeout(go, 80); } else go();
+    },
+    fail() {
+      if (this.warned) return;
+      this.warned = true;
+      toast("No se oye la pronunciación. Sube el volumen, quita el modo silencio o abre Parla en Chrome, Safari o Edge.");
+      setTimeout(() => (this.warned = false), 15000);
     }
   };
   const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
