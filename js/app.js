@@ -728,4 +728,9 @@
   Voice.init();
   Store.restore();
   render();
+
+  // Funcionamiento sin conexión (necesario para instalarla como app y para Google Play).
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+  }
 })();
