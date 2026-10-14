@@ -9,7 +9,8 @@ Microapp gratuita para aprender idiomas jugando: inglés, francés, italiano y a
 - **Audio:** cada palabra y frase se puede escuchar a velocidad normal o a 0,5×.
 - **Progreso:** XP, niveles, racha diaria y sellos para comprar protectores de racha.
 - **Cuentas:** crear cuenta, iniciar sesión, cerrar sesión y modo invitado.
-- **Medición de uso:** con GoatCounter, anónima y sin cookies (ver abajo).
+- **Medición de uso:** con GoatCounter, anónima, sin cookies y solo si la persona lo acepta (ver abajo).
+- **Legal:** aviso legal, privacidad, cookies, términos de uso y accesibilidad (`*.html` en la raíz), aceptación de términos al registrarse y botones para descargar o eliminar los datos desde el perfil.
 - **Dirección pública:** https://plata8jp-blip.github.io/parla/
 
 ## Probarla en tu ordenador
@@ -24,13 +25,15 @@ Después abre http://localhost:8000.
 
 ## Medir cuánta gente la usa
 
-1. Crea una cuenta gratuita en https://www.goatcounter.com y elige un código (por ejemplo, `parla`).
-2. Escribe ese código en `js/analytics.js`, en `goatcounter: ""`.
-3. Publica la app. En tu panel (`https://TU-CODIGO.goatcounter.com`) verás:
+El código `parla` ya está configurado en `js/analytics.js`. Al entrar, cada persona ve un aviso con «Aceptar» y «Rechazar»: solo se cuenta a quien acepta, y puede cambiarlo en «Preferencias de privacidad», al pie de la página. En el panel (`https://parla.goatcounter.com`) verás:
    - Visitantes únicos por día, semana y mes, y desde qué país y dispositivo entran.
    - Eventos: `registro`, `invitado`, `inicio-sesion`, `idioma/xx`, `leccion-completada/…`, `leccion-abandonada/…`, `unidad-completada/…` y `racha/N-dias`.
 
-No se envían nombres, correos ni respuestas. GoatCounter no usa cookies, así que no hace falta banner de cookies.
+No se envían nombres, correos ni respuestas.
+
+## Si cambias algo, revisa los textos legales
+
+Si añades publicidad, pagos, cuentas en un servidor o cualquier servicio externo nuevo (fuentes, vídeos, formularios), actualiza `privacidad.html`, `cookies.html` y `terminos.html` antes de publicarlo. GitHub Pages no permite alojar webs que sean principalmente un negocio online: si Parla pasa a tener pagos, habrá que cambiar de alojamiento.
 
 ## Limitación de la beta
 

@@ -1,6 +1,7 @@
 // Contenido de los cursos. Cada unidad tiene palabras (w) y frases (p).
 // Formato de cada entrada: [texto en el idioma, traducción al español]
-// La unidad marcada con plus:true es contenido exclusivo de Parla Plus.
+// La unidad marcada con plus:true se muestra como «Bonus» (expresiones coloquiales).
+// Las traducciones se han elaborado con ayuda de IA: si se corrige alguna, basta con editarla aquí.
 
 window.PARLA_COURSES = {
   en: {
@@ -44,7 +45,7 @@ window.PARLA_COURSES = {
     ]
   },
   it: {
-    name: "Italiano", voice: "it-IT", flag: "IT", color: "#1F9D6B",
+    name: "Italiano", voice: "it-IT", flag: "IT", color: "#157A52",
     units: [
       { title: "Saludos", city: "Roma",
         w: [["ciao","hola"],["arrivederci","adiós"],["per favore","por favor"],["grazie","gracias"],["amico","amigo"]],

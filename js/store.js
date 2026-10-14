@@ -59,6 +59,14 @@
       if (profile.guest) { write("parla.guest", profile); return; }
       const users = read(KEY_USERS, {});
       if (users[profile.email]) { users[profile.email].profile = profile; write(KEY_USERS, users); }
+    },
+    remove(profile) {
+      try {
+        if (profile.guest) { localStorage.removeItem("parla.guest"); return; }
+        const users = read(KEY_USERS, {});
+        delete users[profile.email];
+        write(KEY_USERS, users);
+      } catch {}
     }
   };
 
@@ -81,7 +89,7 @@
       const profile = await Backend.register(name, email, password);
       // Si venía jugando como invitado, conserva su progreso.
       if (this.user?.guest) {
-        const keep = ["course", "progress", "xp", "stamps", "streak", "lastDay", "freezes", "lessonsDone"];
+        const keep = ["course", "progress", "xp", "stamps", "streak", "lastDay", "freezes", "lessonsDone", "createdAt"];
         keep.forEach(k => profile[k] = this.user[k]);
         try { localStorage.removeItem("parla.guest"); } catch {}
       }
@@ -111,6 +119,19 @@
     },
 
     save() { if (this.user) Backend.save(this.user); },
+
+    // Derecho de supresión: borra la cuenta (o el perfil de invitado) de este navegador.
+    deleteAccount() {
+      if (!this.user) return;
+      Backend.remove(this.user);
+      this.logout();
+    },
+
+    // Derecho de portabilidad: los datos del perfil en JSON (sin la contraseña cifrada).
+    exportData() {
+      const { name, email, createdAt, course, progress, xp, stamps, streak, lastDay, freezes, lessonsDone, guest, termsAcceptedAt, termsVersion } = this.user;
+      return JSON.stringify({ app: "Parla", exportadoEl: new Date().toISOString(), perfil: { name, email, guest: !!guest, createdAt: new Date(createdAt).toISOString(), course, progress, xp, stamps, streak, lastDay, freezes, lessonsDone, termsAcceptedAt, termsVersion } }, null, 2);
+    },
 
     // Comprueba la racha al abrir la app (usa un protector si se saltó un día).
     tick() {
